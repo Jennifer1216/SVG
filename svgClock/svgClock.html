@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="Author" content="Jennifer">
+    <title>svgClock</title>
+    <style type="text/css">
+        *{margin:0;padding:0;font-family: Microsoft YaHei,serif;}
+	    li{list-style: none;}
+        div {
+            width: 500px;
+            height: 500px;
+            background: #70c7eb;
+        }
+        circle {
+            stroke: #c6ff85;
+            stroke-width: 6;
+            fill: rgba(188, 255, 44, 0.52);
+        }
+        line {
+            stroke:#c6ff85;
+            stroke-width: 8;
+            fill:none;
+        }
+        #hour {
+            stroke: #d2ff9a;
+            stroke-width: 18;
+            stroke-linecap: round;
+        }
+        #minute {
+            stroke: #d2ff9a;
+            stroke-width: 14;
+            stroke-linecap: round;
+            fill:none;
+        }
+        #second {
+            stroke: #e5ff8a;
+            stroke-width: 12;
+            stroke-linecap: round;
+            fill:none;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.2" width="100%" height="100%">
+            <circle cx="250" cy="250" r="200"></circle>
+            <path d="M250 250v-100" id="hour"></path>
+            <path d="M250 250v-140" id="minute"></path>
+            <path d="M250 250v-160" id="second"></path>
+            <circle cx="250" cy="250" r="10"></circle>
+        </svg>
+    </div>
+    <script type="text/javascript">
+        var oSvg = document.getElementsByTagName("svg")[0],
+            oHour = document.getElementById("hour"),
+            oMin = document.getElementById("minute"),
+            oSec = document.getElementById("second"),
+            centerX = 250,
+            centerY = 250,
+            R = 200, r = 170,
+            x1y1 = [{x:450,y:250}],
+            x2y2 = [{x:420,y:250}];
+        for(var i = 0; i < 12; i++){
+            var x1 = centerX + Math.cos(i*30*Math.PI/180)*R,
+                y1 = centerY + Math.sin(i*30*Math.PI/180)*R,
+                x2 = centerX + Math.cos(i*30*Math.PI/180)*r,
+                y2 = centerY + Math.sin(i*30*Math.PI/180)*r;
+            x1y1.push({x:x1,y:y1});
+            x2y2.push({x:x2,y:y2});
+        }
+        for(i = 0; i < x1y1.length; i++){
+            var oLine = fn("line",{
+               x1:x1y1[i].x,
+               y1:x1y1[i].y,
+               x2:x2y2[i].x,
+               y2:x2y2[i].y
+            });
+            oSvg.appendChild(oLine);
+        }
+        function fn(tag,json){
+            var svgNS = "http://www.w3.org/2000/svg",
+                oEle = document.createElementNS(svgNS,tag);
+            for(var key in json){
+                oEle.setAttribute(key,json[key]);
+            }
+            return oEle;
+        }
+
+        setInterval(function(){
+            function rotate(kd,deg){
+                kd.setAttribute("transform","rotate("+deg+" 250 250)");
+            }
+            var date = new Date(),
+                hour = date.getHours()%12,
+                minute = date.getMinutes(),
+                second = date.getSeconds();
+            rotate(oHour,30*(hour+minute/60));
+            rotate(oMin,6*minute);
+            rotate(oSec,6*second);
+        },1000);
+
+    </script>
+</body>
+</html>
